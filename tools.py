@@ -1,4 +1,4 @@
-from vectore_store import retrieve
+from vectore_store import retrieve, rerank
 
 
 def doc_search(query: str) -> dict:
@@ -11,7 +11,8 @@ def doc_search(query: str) -> dict:
     Returns:
         dict: List of chunks and status.
     """
-    chunks = retrieve(query)
+    retrieved = retrieve(query)
+    chunks = rerank(query, retrieved)
     return {"status": "success", "chunks": chunks}
 
 
