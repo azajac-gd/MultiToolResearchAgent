@@ -1,7 +1,4 @@
 from google.adk.agents import Agent
-from google.adk.planners import BuiltInPlanner
-from vertexai.preview.reasoning_engines import AdkApp
-
 
 from tools import doc_search
 

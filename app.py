@@ -5,18 +5,10 @@ from vertexai.preview.reasoning_engines import AdkApp
 
 app = AdkApp(agent=root_agent)
 
+#session_service = VertexAiSessionService(os.getenv("PROJECT_ID"), os.getenv("LOCATION"))
 
 
 st.set_page_config(page_title="Research Agent", layout="centered")
-
-st.markdown(
-    """
-    <style>
-        .stChatMessage { margin-bottom: 1rem; }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 st.title("Research Agent")
 
@@ -27,14 +19,14 @@ if prompt := st.chat_input("Type your research question here..."):
     with st.spinner("Thinking..."):
         reply = None
 
-        for event in app.stream_query(user_id="5", message=prompt):
-            if hasattr(event, "is_final_response") and event.is_final_response():
-                content = event.content
-                if content and content.parts:
-                    part = content.parts[0]
-                    reply = part.get("text") if isinstance(part, dict) else getattr(part, "text", None)
+        for event in app.stream_query(user_id="id", message=prompt):
+            print(event)
+            try:
+                text = event["content"]["parts"][0]["text"]
+                reply = text
+            except:
+                reply = "No response from agent."
 
-        reply = reply or "No response from agent."
     st.session_state.history.append((prompt, reply))
 
 for user_msg, bot_msg in st.session_state.history:
