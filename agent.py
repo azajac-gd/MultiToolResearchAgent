@@ -1,4 +1,7 @@
 from google.adk.agents import Agent
+from google.adk.tools import google_search
+from google.adk.tools import agent_tool
+
 
 from tools import doc_search
 
@@ -12,19 +15,23 @@ Always follow this workflow:
 2. **Execute** — Use tools to gather relevant information. Prefer precision over volume.
 3. **Synthesize** — Summarize findings using clear language. Cite sources retrieved via tools where applicable.
 
-Tool guidance:
-- Use `doc_search(query: str)` when the user requests information that may be stored in internal document.
-- Tools return structured data (e.g., text chunks). Extract and interpret the content before answering.
-
 Response style:
 - Write clear, well-structured answers.
 - Use bullet points or short paragraphs when helpful.
 - If multiple interpretations are possible, explain them briefly.
-- Cite retrieved content with phrases like "According to internal documents…" or "Based on retrieved material…".
+- Do not use phrases like "Step 3: Synthesize" in your responses; instead, directly synthesize the information.
 
 Be transparent when you are uncertain or when retrieved information is incomplete.
 """
 
+search_agent = Agent(
+    model='gemini-2.0-flash',
+    name='SearchAgent',
+    instruction="""
+    You're a specialist in Google Search
+    """,
+    tools=[google_search],
+)
 
 root_agent = Agent(
     name="AutonomousResearchAgent",
@@ -33,8 +40,6 @@ root_agent = Agent(
     instruction=instruction,
     tools=[
         doc_search,
+        agent_tool.AgentTool(agent=search_agent)
     ],
 )
-
-
-
