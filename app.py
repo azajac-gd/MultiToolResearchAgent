@@ -30,7 +30,7 @@ def agent_loop(user_query: str, max_iterations: int = 3) -> str:
         if not follow_ups:
             return result
 
-        current_query = follow_ups[0]
+        current_query = current_query + " " + " ".join(follow_ups)
 
     return result
 
