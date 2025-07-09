@@ -1,7 +1,8 @@
-from google import genai
 import os
 import json
 import logging
+from langfuse import observe
+from google import genai
 from pydantic import BaseModel
 
 
@@ -11,19 +12,11 @@ client = genai.Client(
     location=os.getenv("LOCATION")
 )
 
-from pydantic import BaseModel
-from typing import List
-import json
-import logging
-
-from pydantic import BaseModel
-import json
-import logging
-
 class CritiqueResponseWithFeedback(BaseModel):
     critique: str 
     score: int 
 
+@observe
 def run_critique(query: str, result: str) -> dict:
     model = "gemini-2.0-flash"
     prompt = f"""
@@ -63,7 +56,6 @@ Rules:
     logging.info(f"Critique response: {text}")
 
     return text if isinstance(text, dict) else json.loads(text)
-
 
 
 
