@@ -21,16 +21,18 @@ def agent_loop(user_query: str, max_iterations: int = 3) -> str:
 
         history.append((current_query, result))
 
-        critique = run_critique(current_query, result)
-        logging.info(f"Critique for query '{current_query}': {critique}")
-        if critique.get("stop", True):
+        critique = run_critique(user_query, result)
+        logging.info(f"Critique for query '{user_query}': {critique}")
+        if critique.get("score", 0) >= 5:
             return result
-
-        follow_ups = critique.get("follow_up_questions", [])
+        
+        follow_ups = "The answer is not satisfactory. Please improve it by addressing the following points:\n " + critique.get("critique", "")
         if not follow_ups:
             return result
-
-        current_query = current_query + " " + " ".join(follow_ups)
+        
+        previous_result = "Previous answer: " + result 
+        current_query = previous_result + "\n\n" + user_query + "\n\n"+ follow_ups 
+        logging.info(f"Iteration {i+1}: Updated query for next round: {current_query}")
 
     return result
 
@@ -51,4 +53,4 @@ for user_msg, bot_msg in st.session_state.history:
     with st.chat_message("user"):
         st.markdown(user_msg)
     with st.chat_message("assistant"):
-        st.markdown(bot_msg)
+        st.markdown(bot_msg, unsafe_allow_html=True)

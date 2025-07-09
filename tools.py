@@ -1,3 +1,6 @@
+from pydantic import BaseModel
+from jinja2 import Template
+
 from vectore_store import retrieve, rerank
 
 
@@ -14,5 +17,40 @@ def doc_search(query: str) -> dict:
     retrieved = retrieve(query)
     chunks = rerank(query, retrieved)
     return {"status": "success", "chunks": chunks}
+
+from typing import Literal
+from pydantic import BaseModel
+from jinja2 import Template, TemplateError
+import logging
+
+
+class CanvasInput(BaseModel):
+    content_type: str
+    data: dict
+    template: str
+
+
+def canvas_tool(input: dict) -> str:
+    """
+    Generate structured outputs like reports or code using Jinja2 templates.
+
+    Args:
+        input (CanvasInput): Input data containing content type, data, and template.
+
+    Returns:
+        str: Rendered output from the Jinja2 template.
+    """
+    canvas_input = CanvasInput(**input)
+    try:
+        tmpl = Template(canvas_input.template)
+        rendered = tmpl.render(**canvas_input.data)
+        logging.info(f"Rendered {canvas_input.content_type} output successfully.")
+        return rendered
+    except TemplateError as e:
+        logging.error(f"Jinja2 template rendering failed: {str(e)}")
+        return (
+            f"[CanvasTool Error] Failed to render the {canvas_input.content_type} output due to template error: {str(e)}"
+        )
+
 
 
