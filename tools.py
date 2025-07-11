@@ -1,5 +1,7 @@
+import logging
+
 from pydantic import BaseModel
-from jinja2 import Template
+from jinja2 import Template, TemplateError
 
 from vectore_store import retrieve, rerank
 
@@ -18,11 +20,6 @@ def doc_search(query: str) -> dict:
     chunks = rerank(query, retrieved)
     return {"status": "success", "chunks": chunks}
 
-from typing import Literal
-from pydantic import BaseModel
-from jinja2 import Template, TemplateError
-import logging
-
 
 class CanvasInput(BaseModel):
     content_type: str
@@ -32,7 +29,7 @@ class CanvasInput(BaseModel):
 
 def canvas_tool(input: dict) -> str:
     """
-    Generate structured outputs like reports or code using Jinja2 templates.
+    Generate structured outputs like reports, docs or code using Jinja2 templates. Use this tool when the user expects a specific format or wants a long-form answer.
 
     Args:
         input (CanvasInput): Input data containing content type, data, and template.
