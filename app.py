@@ -17,22 +17,27 @@ if "history" not in st.session_state:
 if prompt := st.chat_input("Enter your research question..."):
     with st.spinner("Thinking..."):
         response = ""
-        i = 0
+        response_from_synthesizer = None
+
         for event in app.stream_query(
             user_id="user-123",
             message=prompt,
             #inputs={"extended_mode": extended_mode}
-
         ):  
-            print(i)
-            response = event.get("content", {}).get("parts", [{}])[0].get("text", "")
-            print(response)
-            #logging.info(f"Response part: {response}")
-            if i == 4:
-                #logging.info(f"Final response: {response}")
-                print(response)
-                st.session_state.history.append((prompt, response))
-            i += 1
+            #print(event)
+            content = event.get("content", {})
+            step_name = event.get("author", "")
+            print(f"Processing step: {step_name}")
+            text = content.get("parts", [{}])[0].get("text", "")
+
+            if step_name == "Synthesizer" and text:
+                response_from_synthesizer = text
+                print(f"Synthesizer output: {text}")
+
+        if response_from_synthesizer:
+            st.session_state.history.append((prompt, response_from_synthesizer))
+        else:
+            st.session_state.history.append((prompt, "No response generated."))
 
 
 for user_msg, bot_msg in st.session_state.history:
