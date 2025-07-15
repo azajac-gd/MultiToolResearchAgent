@@ -3,6 +3,7 @@ import logging
 from vertexai.preview.reasoning_engines import AdkApp
 from loop_agent import research_agent
 
+logging.getLogger("opentelemetry").setLevel(logging.ERROR)
 #logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 app = AdkApp(agent=research_agent)

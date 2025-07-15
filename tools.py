@@ -1,5 +1,5 @@
 import logging
-
+from google.adk.tools.tool_context import ToolContext
 from pydantic import BaseModel
 from jinja2 import Template, TemplateError
 
@@ -49,5 +49,11 @@ def canvas_tool(input: dict) -> str:
             f"[CanvasTool Error] Failed to render the {canvas_input.content_type} output due to template error: {str(e)}"
         )
 
+def exit_loop(tool_context: ToolContext):
+    """
+    Call this function ONLY when the critique indicates no further changes 
+    are needed, signaling the iterative process should end.
+    """
+    tool_context.actions.escalate = True
 
-
+    return {}  

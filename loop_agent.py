@@ -1,7 +1,7 @@
-# loop_agent.py
 from google.adk.agents import Agent, LoopAgent
 from google.adk.tools import agent_tool, google_search
-from tools import doc_search, canvas_tool
+from tools import doc_search, canvas_tool, exit_loop
+
 
 web_search_agent = Agent(
     name="WebSearchAgent",
@@ -28,7 +28,7 @@ execution_agent = Agent(
     model="gemini-2.0-flash",
     tools=[
         doc_search,
-        agent_tool.AgentTool(agent=web_search_agent)
+        agent_tool.AgentTool(agent=web_search_agent, skip_summarization=True)
     ],
     instruction="""
 You're responsible for retrieving and summarizing relevant information to answer each step from the plan.
@@ -61,8 +61,12 @@ You are a self-reviewing critic. Evaluate the agent's final response based on:
 - factual soundness
 - formatting
 
-If you find issues, return a revised plan or recommend retry.
-"""
+- If the answer is complete and accurate, call the `exit_loop` tool and provide the final text of your answer in the same turn.
+- If the answer is incomplete and you find issues, return a revised plan or recommend retry, provide feedback for the next iteration. DO NOT call `exit_loop`.
+
+
+""",
+    tools = [exit_loop]
 )
 
 research_agent = LoopAgent(
@@ -73,5 +77,5 @@ research_agent = LoopAgent(
         synthesizer_agent,
         critique_agent
     ],
-    max_iterations=1
+    max_iterations=3
 )
