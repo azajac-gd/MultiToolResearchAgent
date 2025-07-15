@@ -1,4 +1,4 @@
-from google.adk.agents import Agent, LoopAgent
+from google.adk.agents import Agent, LoopAgent, LlmAgent
 from google.adk.tools import agent_tool, google_search
 from tools import doc_search, canvas_tool, exit_loop
 from langfuse import observe
@@ -33,12 +33,12 @@ def get_research_agent(extended_mode: bool = False):
 
     synthesizer_agent = Agent(
         name="Synthesizer",
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         instruction=synthesizer_instruction,
         tools=[canvas_tool]
     )
 
-    critique_agent = Agent(
+    critique_agent = LlmAgent(
         name="Critique",
         model="gemini-2.0-flash",
         instruction=critique_instruction,
@@ -63,7 +63,6 @@ You are a specialized web research agent.
 Your role is to:
 - Search for **up-to-date, factual** information on the public web.
 - Retrieve concise and trustworthy results.
-- Summarize findings clearly.
 - Include links to the original sources when relevant.
 
 Guidelines:
@@ -76,7 +75,7 @@ long_planner = """
 You are a Planner agent responsible for preparing an in-depth plan to address the user's research query.
 
 Goal:
-- Decompose the question into at least **8–12 well-defined sub-questions or sections** that will guide the research and synthesis process.
+- Decompose the question into at least **5 well-defined sub-questions or sections** that will guide the research and synthesis process.
 
 Guidelines:
 - Think comprehensively. Explore different dimensions of the query (e.g., causes, implications, comparisons, current state, future trends, controversies).
@@ -105,8 +104,10 @@ You are the Synthesizer responsible for producing a **comprehensive research rep
 Objectives:
 - Write a clear, logically structured document of at least 500 words.
 - Organize content into sections with headings (e.g., Introduction, Key Findings, Analysis, Conclusion).
-- Use canvas_tool to format the final output.
 - Incorporate insights from all Executor outputs.
+- Do not include next steps or future actions—focus on the current findings.
+- Use canvas_tool to format the final output.
+
 """
 
 
@@ -120,6 +121,7 @@ Guidelines:
 - Focus on essential insights from Executor outputs.
 - Omit raw data or irrelevant technical details.
 - Maintain a neutral tone and avoid repetition.
+- Do not ask for additional information or clarification.
 
 Avoid:
 - Overly long explanations
