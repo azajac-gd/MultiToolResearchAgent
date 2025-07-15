@@ -1,8 +1,9 @@
 from google.adk.agents import Agent, LoopAgent
 from google.adk.tools import agent_tool, google_search
 from tools import doc_search, canvas_tool, exit_loop
+from langfuse import observe
 
-
+@observe
 def get_research_agent(extended_mode: bool = False):
     planner_instruction = long_planner if extended_mode else short_planner
     synthesizer_instruction = long_synthesizer if extended_mode else short_synthesizer

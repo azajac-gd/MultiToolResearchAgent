@@ -32,7 +32,10 @@ def canvas_tool(input: dict) -> str:
     Generate structured outputs like reports, docs or code using Jinja2 templates. Use this tool when the user expects a specific format or wants a long-form answer.
 
     Args:
-        input (CanvasInput): Input data containing content type, data, and template.
+        input (CanvasInput):
+            - content_type (str): Type of content to generate (e.g., "report", "doc", "code").
+            - data (dict): Data to be rendered in the template.
+            - template (str): Jinja2 template string to render.
 
     Returns:
         str: Rendered output from the Jinja2 template.
