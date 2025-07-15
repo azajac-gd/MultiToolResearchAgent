@@ -38,7 +38,7 @@ def get_research_agent(extended_mode: bool = False):
         tools=[canvas_tool]
     )
 
-    critique_agent = LlmAgent(
+    critique_agent = Agent(
         name="Critique",
         model="gemini-2.0-flash",
         instruction=critique_instruction,
