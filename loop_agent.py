@@ -1,32 +1,34 @@
-from google.adk.agents import Agent, LoopAgent, LlmAgent
+from google.adk.agents import Agent, LoopAgent
 from google.adk.tools import agent_tool, google_search
-from tools import doc_search, canvas_tool, exit_loop
+from tools import doc_search, canvas_tool, exit_loop, financial_data
 from langfuse import observe
 
 @observe
 def get_research_agent(extended_mode: bool = False):
     planner_instruction = long_planner if extended_mode else short_planner
     synthesizer_instruction = long_synthesizer if extended_mode else short_synthesizer
+    gemini_model = "gemini-2.0-flash"
 
     web_search_agent = Agent(
         name="WebSearchAgent",
-        model="gemini-2.0-flash",
+        model=gemini_model,
         instruction=web_search_instruction,
         tools=[google_search]
     )
 
     planner_agent = Agent(
         name="Planner",
-        model="gemini-2.0-flash",
+        model=gemini_model,
         instruction=planner_instruction
     )
 
     execution_agent = Agent(
         name="Executor",
-        model="gemini-2.0-flash",
+        model=gemini_model,
         tools=[
             doc_search,
-            agent_tool.AgentTool(agent=web_search_agent, skip_summarization=True)
+            agent_tool.AgentTool(agent=web_search_agent, skip_summarization=True),
+            financial_data
         ],
         instruction=execution_instruction
     )
@@ -40,7 +42,7 @@ def get_research_agent(extended_mode: bool = False):
 
     critique_agent = Agent(
         name="Critique",
-        model="gemini-2.0-flash",
+        model=gemini_model,
         instruction=critique_instruction,
         tools=[exit_loop]
     )

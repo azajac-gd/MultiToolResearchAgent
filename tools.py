@@ -1,4 +1,5 @@
 import logging
+import requests
 from google.adk.tools.tool_context import ToolContext
 from pydantic import BaseModel
 from jinja2 import Template, TemplateError
@@ -60,3 +61,48 @@ def exit_loop(tool_context: ToolContext):
     tool_context.actions.escalate = True
 
     return {}  
+
+
+import logging
+import requests
+from pydantic import BaseModel
+from google.adk.tools.tool_context import ToolContext
+
+logger = logging.getLogger(__name__)
+
+MCP_SERVER_URL = "http://localhost:8080/v1/fetch"
+
+FINANCIAL_URLS = {
+    "stocks": "https://finance.yahoo.com/markets/stocks/most-active/",
+    "crypto": "https://finance.yahoo.com/markets/crypto/all/",
+    "currencies": "https://finance.yahoo.com/markets/currencies/"
+}
+
+class FinancialQuery(BaseModel):
+    type: str  # "stocks", "crypto", "currencies"
+
+def financial_data(query: str) -> dict:
+    """
+    Fetches structured financial data through the MCP server for a given type.
+
+    Args:
+        query (str): One of "stocks", "crypto", or "currencies".
+
+    Returns:
+        dict: Structured result or error.
+    """
+    logger.info(f"FinancialDataTool: received query '{query}'")
+
+    url = FINANCIAL_URLS.get(query.lower())
+    if not url:
+        logger.warning(f"Unsupported financial query type: {query}")
+        return {"status": "error", "message": f"Unsupported query type '{query}'"}
+
+    try:
+        response = requests.post(MCP_SERVER_URL, json={"urls": [url]}, timeout=10)
+        response.raise_for_status()
+        logger.info("Data successfully fetched from MCP server")
+        return {"status": "success", "data": response.json()}
+    except requests.RequestException as e:
+        logger.error(f"Failed to fetch financial data: {e}")
+        return {"status": "error", "message": str(e)}
