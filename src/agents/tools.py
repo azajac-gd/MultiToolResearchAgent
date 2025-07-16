@@ -4,7 +4,7 @@ from google.adk.tools.tool_context import ToolContext
 from pydantic import BaseModel
 from jinja2 import Template, TemplateError
 
-from vectore_store import retrieve, rerank
+from services.vectore_store import retrieve, rerank
 
 
 def doc_search(query: str) -> dict:

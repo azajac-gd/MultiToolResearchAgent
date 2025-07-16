@@ -2,7 +2,7 @@ from qdrant_client import QdrantClient
 from langchain.vectorstores import Qdrant
 from sentence_transformers import CrossEncoder
 
-from embedding import GeminiEmbeddings
+from services.embedding import GeminiEmbeddings
 
 
 QDRANT_HOST = "localhost"
