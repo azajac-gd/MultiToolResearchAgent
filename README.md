@@ -1,4 +1,4 @@
-# Research Agent 
+# Multi-Tool Research Agent 
 
 A conversational research assistant powered by Google Vertex AI's Reasoning Engine (`AdkApp`) and Streamlit UI.  
 Supports extended mode for saving long-form synthesized reports.  
