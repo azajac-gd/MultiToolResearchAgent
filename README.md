@@ -27,12 +27,7 @@ Runs locally or in Docker with Application Default Credentials (ADC).
 
 ## Installation (Local)
 
-1. Clone the repository:
-
-    ```bash
-    git clone https://github.com/your-name/research-agent.git
-    cd research-agent
-    ```
+1. Clone the repository
 
 2. Create a virtual environment and activate it:
 
@@ -56,6 +51,6 @@ Runs locally or in Docker with Application Default Credentials (ADC).
 5. Run the app:
 
     ```bash
-    streamlit run app.py
+    streamlit src/run app.py
     ```
 
