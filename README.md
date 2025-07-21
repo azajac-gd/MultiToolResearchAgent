@@ -2,7 +2,7 @@
 
 A conversational research assistant powered by Google Vertex AI's Reasoning Engine (`AdkApp`) and Streamlit UI.  
 Supports extended mode for saving long-form synthesized reports.  
-Runs locally or in Docker with Application Default Credentials (ADC).
+Runs locally.
 
 ---
 
