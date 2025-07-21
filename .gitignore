@@ -44,3 +44,4 @@ Dockerfile
 .idea/
 .env
 notes.py
+key.json
