@@ -8,8 +8,8 @@ Designed to run locally with GCP Application Default Credentials (ADC).
 
 ## Architecture
 
-- **Planner–Executor–Synthesizer Loop Agent** using `google.generativeai.agent.AdkApp`
-- Tools include: web search, vector-based doc search, table/chart generation
+- **Planner–Executor–Synthesizer-Critique Loop Agent** using `google.generativeai.agent.AdkApp`
+- Tools include: web search, vector-based doc search
 - Built-in critique & retry logic
 - Session memory with chat history & report persistence
 
@@ -19,7 +19,7 @@ Designed to run locally with GCP Application Default Credentials (ADC).
 
 - Vertex AI Gemini via Reasoning Engine (ADK)
 - Conversational UI with Streamlit
-- Loop agent with planning, execution, synthesis
+- Loop agent with planning, execution, synthesis and critique
 - Extended mode for long-form report generation
 
 ---
