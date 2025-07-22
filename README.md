@@ -32,7 +32,7 @@ Designed to run locally with GCP Application Default Credentials (ADC).
 
 ---
 
-## Installation (Local, no Docker)
+## Installation
 
 1. **Clone the repository**
 
