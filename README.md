@@ -7,13 +7,6 @@ Designed to run locally with GCP Application Default Credentials (ADC).
 ---
 
 ## Architecture
-[User] ⇄ [Streamlit Frontend UI] ⇄ [ADK Reasoning Engine (AdkApp)]
-⇓
-[Tool Integration: Web Search, Doc Search, Canvas Editor, Financial Tools]
-⇓
-[Vertex AI (Gemini Models via genai SDK)]
-
----
 
 - **Planner–Executor–Synthesizer Loop Agent** using `google.generativeai.agent.AdkApp`
 - Tools include: web search, vector-based doc search, table/chart generation
@@ -100,22 +93,6 @@ Designed to run locally with GCP Application Default Credentials (ADC).
 
 - **Module errors (e.g., `streamlit` not found)**  
   → Ensure you're using the correct Python environment (`venv`) and `pip install -r requirements.txt` completed successfully.
-
----
-
-## Project Structure
-src/
-├── app.py # Main Streamlit UI
-├── agents/
-│ └── loop_agent.py # Core Reasoning Agent
-├── services/
-│ ├── embedding.py # GeminiEmbeddings wrapper
-│ ├── vectore_store.py # FAISS / Qdrant retrieval
-├── tools/
-│ └── doc_search.py, etc. # External tools
-├── utils/
-│ └── langfuse_wrapper.py # Optional Langfuse tracing
-
 
 ---
 
