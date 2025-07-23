@@ -1,22 +1,26 @@
-import logging
 import requests
-from google.adk.tools.tool_context import ToolContext
+import os
 from pydantic import BaseModel
-from jinja2 import Template, TemplateError
+from jinja2 import Template
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_core.tools import tool
 
 from services.vectore_store import retrieve, rerank
 
+TAVILY_API_KEY = os.environ['TAVILY_API_KEY']
 
+
+@tool
+def web_search(query: str) -> list:
+    """Search the web for a query"""
+    tavily_search = TavilySearchResults(api_key=TAVILY_API_KEY, max_results=5, search_depth='advanced', max_tokens=1000)
+    results = tavily_search.invoke(query)
+    return results
+
+
+@tool
 def doc_search(query: str) -> dict:
-    """
-    Search internal document "IFC Annual Report 2024 financials" semantically for relevant content.
-
-    Args:
-        query (str): What the user is looking for.
-
-    Returns:
-        dict: List of chunks and status.
-    """
+    """Search the IFC's financial report 2024 for a query"""
     retrieved = retrieve(query)
     chunks = rerank(query, retrieved)
     return {"status": "success", "chunks": chunks}
@@ -27,40 +31,14 @@ class CanvasInput(BaseModel):
     data: dict
     template: str
 
-
+@tool
 def canvas_tool(input: dict) -> str:
-    """
-    Generate structured outputs like reports, docs or code using Jinja2 templates. Use this tool when the user expects a specific format or wants a long-form answer.
-
-    Args:
-        input (CanvasInput):
-            - content_type (str): Type of content to generate (e.g., "report", "doc", "code").
-            - data (dict): Data to be rendered in the template.
-            - template (str): Jinja2 template string to render.
-
-    Returns:
-        str: Rendered output from the Jinja2 template.
-    """
+    """Render a template with data for the canvas tool"""
     canvas_input = CanvasInput(**input)
-    try:
-        tmpl = Template(canvas_input.template)
-        rendered = tmpl.render(**canvas_input.data)
-        logging.info(f"Rendered {canvas_input.content_type} output successfully.")
-        return rendered
-    except TemplateError as e:
-        logging.error(f"Jinja2 template rendering failed: {str(e)}")
-        return (
-            f"[CanvasTool Error] Failed to render the {canvas_input.content_type} output due to template error: {str(e)}"
-        )
+    tmpl = Template(canvas_input.template)
+    return tmpl.render(**canvas_input.data)
 
-def exit_loop(tool_context: ToolContext):
-    """
-    Call this function ONLY when the critique indicates no further changes 
-    are needed, signaling the iterative process should end.
-    """
-    tool_context.actions.escalate = True
 
-    return {}  
 
 MCP_SERVER_URL = "http://localhost:8080/v1/fetch"
 
@@ -70,31 +48,17 @@ FINANCIAL_URLS = {
     "currencies": "https://finance.yahoo.com/markets/currencies/"
 }
 
-class FinancialQuery(BaseModel):
-    type: str 
-
+@tool
 def financial_data(query: str) -> dict:
-    """
-    Fetches structured financial data through the MCP server for a given type.
-
-    Args:
-        query (str): One of "stocks", "crypto", or "currencies".
-
-    Returns:
-        dict: Structured result or error.
-    """
-    logging.info(f"FinancialDataTool: received query '{query}'")
-
+    """Fetch financial data (currencies, crypto, stocks) from the MCP server based on the query type in real-time."""
     url = FINANCIAL_URLS.get(query.lower())
     if not url:
-        logging.warning(f"Unsupported financial query type: {query}")
         return {"status": "error", "message": f"Unsupported query type '{query}'"}
 
     try:
         response = requests.post(MCP_SERVER_URL, json={"urls": [url]}, timeout=10)
         response.raise_for_status()
-        logging.info("Data successfully fetched from MCP server")
         return {"status": "success", "data": response.json()}
     except requests.RequestException as e:
-        logging.error(f"Failed to fetch financial data: {e}")
         return {"status": "error", "message": str(e)}
+
