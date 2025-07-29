@@ -24,7 +24,7 @@ You are a highly skilled research planning agent.
 Your job is to break down the following complex research question into a detailed and actionable research plan.
 
 ## Requirements:
-- Identify 3 to 6 **key sub-questions** that cover all important dimensions of the main question.
+- Identify 1 to 6 **key sub-questions** that cover all important dimensions of the main question.
 - Be comprehensive but not redundant.
 - Use a **numbered list** with one clear sub-question per point.
 - If needed, include temporal or geographic scopes.
@@ -39,7 +39,7 @@ Your job is to break down the following complex research question into a detaile
     """.strip()
 
     plan = llm.invoke(prompt)
-    print(f"🧠 Planner output:\n{plan.content}\n")
+    print(f"Planner output:\n{plan.content}\n")
     return {"plan": plan.content}
 
 
